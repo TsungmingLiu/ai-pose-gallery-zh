@@ -1,7 +1,14 @@
 import type { CostumeItem, PortraitItem, PoseItem, RecipeState } from '@/types/gallery'
 
 export function referenceImageUrl(src: string): string {
-  return /^(data:|https?:\/\/|\/)/i.test(src) ? src : `/${src}`
+  return /^(data:|blob:|https?:\/\/|\/)/i.test(src) ? src : `/${src}`
+}
+
+/** Same-origin images may require login; blob URLs only exist in this browser. */
+export function referenceNeedsInlineData(src: string, pageUrl = typeof window !== 'undefined' ? window.location.href : undefined): boolean {
+  if (/^(data:|blob:)/i.test(src)) return true
+  if (!pageUrl) return !/^https?:\/\//i.test(src)
+  return new URL(src, pageUrl).origin === new URL(pageUrl).origin
 }
 
 export function poseThumbPath(pose: PoseItem, useDepth = Boolean(pose.useDepth)): string {

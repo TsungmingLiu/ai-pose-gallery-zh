@@ -61,6 +61,7 @@ import { poseImagePath, poseThumbPath, referenceImageUrl, uploadedReferences } f
 import { useStudio } from '@/store/studioStore'
 import type { RandomScope, ReferenceSlot } from '@/lib/randomRecipe'
 import { selectCostumeView } from '@/lib/costumeSources'
+import { supportsGptInputFidelity } from '@/lib/gptImageCapabilities'
 import type {
   ComfyUiParams,
   DoubaoParams,
@@ -129,6 +130,9 @@ function StudioPage() {
   const activeProvider = apiConfig.activeProvider
   const providerMeta = PROVIDER_META[activeProvider]
   const providerCfg = apiConfig.providers[activeProvider]
+  const gptFidelitySupported = supportsGptInputFidelity(
+    providerCfg.model === 'custom' ? providerCfg.customModel : providerCfg.model
+  )
 
   const activeWorkflowImages = activeProvider === 'comfyui' && recipe.workflowImagesIdentity === workflowIdentity(apiConfig.comfyuiParams.workflowJson) ? Object.values(recipe.workflowImages || {}) : []
   const defaultPrompt = buildRecipePrompt(recipe, apiConfig.stylePreset, activeWorkflowImages)
@@ -1171,9 +1175,13 @@ function StudioPage() {
                         </SelectContent>
                       </Select>
                     </Field>
-                    <Field label="参考还原度 (input_fidelity)">
+                    <Field
+                      label="参考还原度"
+                      hint={!gptFidelitySupported ? '当前模型使用默认还原度，无需设置。' : undefined}
+                    >
                       <Select
-                        value={apiConfig.gptParams.inputFidelity}
+                        value={gptFidelitySupported ? apiConfig.gptParams.inputFidelity : 'auto'}
+                        disabled={!gptFidelitySupported}
                         onValueChange={(v) =>
                           updateGptParams({ inputFidelity: v as GptParams['inputFidelity'] })
                         }
@@ -1182,6 +1190,7 @@ function StudioPage() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="auto">模型默认</SelectItem>
                           <SelectItem value="high">high</SelectItem>
                           <SelectItem value="low">low</SelectItem>
                         </SelectContent>
@@ -1374,7 +1383,7 @@ function StudioPage() {
 
                 {activeProvider !== 'comfyui' && (
                   <>
-                    <Field label="图片传参方式">
+                    <Field label="图片传参方式" hint="站内图片和上传图片会自动附带图片内容，避免登录限制。">
                       <Select
                         value={apiConfig.imagePassMode}
                         onValueChange={(v) => updateApiConfig({ imagePassMode: v as ImagePassMode })}
@@ -1383,7 +1392,7 @@ function StudioPage() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="url">URL</SelectItem>
+                          <SelectItem value="url">自动（外部图片使用 URL）</SelectItem>
                           <SelectItem value="base64">Base64</SelectItem>
                         </SelectContent>
                       </Select>

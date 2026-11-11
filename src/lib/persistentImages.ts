@@ -3,8 +3,8 @@ import { referenceImageUrl } from './recipeImages'
 
 export async function durableImage(url: string): Promise<string> {
   if (url.startsWith('data:image/')) return url
-  const response = await fetch(referenceImageUrl(url))
-  if (!response.ok) throw new Error('图片下载失败')
+  const response = await fetch(referenceImageUrl(url), { credentials: 'same-origin' })
+  if (!response.ok) throw new Error(`图片下载失败 (HTTP ${response.status})`)
   const blob = await response.blob()
   if (!blob.type.startsWith('image/')) throw new Error('引用不是图片')
   return new Promise((resolve, reject) => {

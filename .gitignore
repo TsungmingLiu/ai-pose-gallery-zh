@@ -22,6 +22,7 @@ verify_failed.txt
 node_modules/
 .wrangler/
 .tanstack/
+.openai/hosting.json
 
 # 构建产物与原始 PNG 备份（不上传 Git）
 dist/
