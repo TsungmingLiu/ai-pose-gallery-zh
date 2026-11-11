@@ -218,7 +218,7 @@ function SettingsPage() {
       {/* 全局传输设置 */}
       {pid !== 'comfyui' && (
         <Section title="全局请求选项">
-          <Field label="参考图传参方式">
+          <Field label="参考图传参方式" hint="站内图片和上传图片会自动附带图片内容，避免登录限制；外部公开图片可使用 URL。">
             <Select
               value={apiConfig.imagePassMode}
               onValueChange={(v) => updateApiConfig({ imagePassMode: v as ImagePassMode })}
@@ -227,7 +227,7 @@ function SettingsPage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="url">传递图片 URL（免上传文件，推荐）</SelectItem>
+                <SelectItem value="url">自动（外部公开图片使用 URL）</SelectItem>
                 <SelectItem value="base64">转 Base64 编码传输</SelectItem>
               </SelectContent>
             </Select>

@@ -123,7 +123,7 @@ export interface GptParams {
   endpointMode: 'images_edits_json' | 'images_edits' | 'responses' | 'chat'
   size: 'auto' | '1024x1536' | '1024x1024' | '1536x1024'
   quality: 'auto' | 'low' | 'medium' | 'high' | 'xhigh' | 'max'
-  inputFidelity: 'high' | 'low'
+  inputFidelity: 'auto' | 'high' | 'low'
   background: 'auto' | 'opaque' | 'transparent'
   outputFormat: 'png' | 'jpeg' | 'webp'
   moderation: 'auto' | 'low'
